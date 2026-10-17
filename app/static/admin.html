@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Cuenta · Administración</title>
+<meta name="theme-color" content="#0f1419">
+<link rel="icon" href="/static/icons/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/style.css?v={{v}}">
+</head>
+<body class="adm">
+
+<!-- login -->
+<main id="a-login" class="a-wrap" hidden>
+  <form id="login-form" class="a-card login">
+    <h1>Administración</h1>
+    <p class="hint" id="login-msg">Introduce la contraseña del panel.</p>
+    <label>Contraseña<input id="a-pass" type="password" autocomplete="current-password" required></label>
+    <p class="a-err" id="login-err" hidden></p>
+    <button class="btn primary big" type="submit">Entrar</button>
+  </form>
+</main>
+
+<!-- panel -->
+<main id="a-main" class="a-wrap" hidden>
+  <header class="a-top">
+    <h1>Administración</h1>
+    <span class="spacer"></span>
+    <button id="a-refresh" class="btn ghost small">Actualizar</button>
+    <button id="a-logout" class="btn ghost small">Salir</button>
+  </header>
+
+  <section class="a-stats" id="a-stats"></section>
+
+  <section class="a-card">
+    <div class="a-row">
+      <div class="a-grow"><strong>Pausar la lectura de tickets</strong><span class="hint" id="pause-hint"></span></div>
+      <button id="a-pause" class="switch" role="switch" aria-checked="false" aria-label="Pausar la lectura de tickets"><span class="track"></span></button>
+    </div>
+  </section>
+
+  <section class="a-card">
+    <strong>Limpiar cuentas sin actividad</strong>
+    <div class="a-row a-clean">
+      <span>desde hace</span>
+      <input id="idle-days" type="number" inputmode="numeric" min="1" max="3650" value="30">
+      <span>días</span>
+      <button id="idle-check" class="btn small">Ver</button>
+    </div>
+    <div class="a-row" id="idle-result" hidden>
+      <span class="a-grow" id="idle-text"></span>
+      <button id="idle-del" class="btn small danger">Borrar…</button>
+    </div>
+  </section>
+
+  <section>
+    <div class="a-listbar">
+      <label class="a-check"><input id="sel-all" type="checkbox"> Todas</label>
+      <span class="a-grow" id="list-count"></span>
+      <button id="del-sel" class="btn small danger" disabled>Borrar seleccionadas</button>
+    </div>
+    <ul id="a-list" class="a-list"></ul>
+    <p id="a-empty" class="empty" hidden>No hay cuentas en el servidor.</p>
+  </section>
+
+  <section class="a-card" id="a-events-card" hidden>
+    <strong>Eventos recientes de abuso</strong>
+    <ul id="a-events" class="a-events"></ul>
+  </section>
+</main>
+
+<dialog id="a-dlg">
+  <form method="dialog">
+    <h3 id="a-dlg-title"></h3>
+    <p class="hint" id="a-dlg-text"></p>
+    <div class="dlg-actions">
+      <span class="spacer"></span>
+      <button value="cancel" class="btn ghost">Cancelar</button>
+      <button id="a-dlg-ok" value="ok" class="btn danger solid">Borrar</button>
+    </div>
+  </form>
+</dialog>
+
+<div id="toast" class="toast" hidden></div>
+<script type="module" src="/static/admin.js?v={{v}}"></script>
+</body>
+</html>

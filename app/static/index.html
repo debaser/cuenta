@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Cuenta</title>
+<meta name="theme-color" content="#0f1419">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cuenta">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/static/icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png">
+<link rel="stylesheet" href="/static/style.css?v={{v}}">
+</head>
+<body>
+<main id="app">
+
+  <!-- 1. capture -->
+  <section id="s-cam" class="screen">
+    <video id="cam" playsinline muted autoplay></video>
+    <div id="cam-fallback" class="fallback" hidden>
+      <div class="logo" aria-hidden="true">🧾</div>
+      <h1>Cuenta</h1>
+      <p>Haz una foto al ticket o elige una de la galería.</p>
+      <label class="btn primary big">Hacer foto<input id="in-shot" type="file" accept="image/*" capture="environment" hidden></label>
+    </div>
+    <div class="cam-bar">
+      <label class="round" title="Elegir de la galería" aria-label="Elegir de la galería">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5-5 4 4 3-3 4 4"/></svg>
+        <input id="in-gallery" type="file" accept="image/*" hidden>
+      </label>
+      <button id="shutter" class="shutter" aria-label="Hacer foto"></button>
+      <button id="resume" class="round" aria-label="Mis cuentas" title="Mis cuentas" hidden>
+        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg><i id="resume-n" class="badge"></i>
+      </button>
+      <span id="resume-gap" class="round-gap"></span>
+    </div>
+    <p class="cam-hint">Encuadra el ticket entero, bien recto y con luz</p>
+  </section>
+
+  <!-- 2. scanning -->
+  <section id="s-scan" class="screen center" hidden>
+    <img id="scan-img" alt="">
+    <div class="scan-box"><div class="spin"></div><strong>Leyendo el ticket…</strong><span>Puede tardar unos segundos</span></div>
+  </section>
+
+  <!-- 3. list -->
+  <section id="s-list" class="screen" hidden>
+    <header class="top">
+      <button id="b-close" class="iconbtn" aria-label="Cerrar cuenta" title="Cerrar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <div class="ttl"><strong id="title">Cuenta</strong><span id="subtitle"></span></div>
+      <button id="b-photo" class="iconbtn" aria-label="Ver la foto" title="Ver la foto"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5-5 4 4 3-3 4 4"/></svg></button>
+      <button id="b-share" class="iconbtn" aria-label="Compartir cuenta" title="Compartir cuenta"><svg viewBox="0 0 24 24"><circle cx="6" cy="12" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="18" cy="18" r="2.4"/><path d="M8.2 10.9l7.6-3.8M8.2 13.1l7.6 3.8"/></svg></button>
+      <button id="b-del" class="iconbtn" aria-label="Eliminar de mis cuentas" title="Eliminar de mis cuentas"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg></button>
+    </header>
+    <div id="offline" class="offline" hidden>Sin conexión: ves la última copia guardada en este móvil. No puedo comprobar si otra persona ha corregido algo.</div>
+    <div id="warn" class="warn" hidden></div>
+    <ul id="lines" class="lines"></ul>
+    <button id="add" class="btn ghost addline">+ Añadir línea</button>
+    <div class="spacer-bottom"></div>
+    <footer class="bar">
+      <div class="bar-top">
+        <div class="bar-amt"><span>Lo tuyo</span><strong id="mine">0,00 €</strong></div>
+        <button id="done" class="btn primary">Listo</button>
+      </div>
+      <button id="statusbar" class="statusbar" hidden aria-label="Ver el resumen de la cuenta">
+        <span class="sb-line"><strong id="sb-main"></strong><span id="sb-sub"></span></span>
+        <span class="sb-track"><i id="sb-fill"></i></span>
+        <span class="sb-note" id="sb-note" hidden></span>
+      </button>
+      <div class="bar-sub" id="tot"></div>
+    </footer>
+  </section>
+
+  <!-- 3b. summary of who took what -->
+  <section id="s-sum" class="screen" hidden>
+    <header class="top">
+      <button id="sum-close" class="iconbtn" aria-label="Volver" title="Volver"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="ttl"><strong>Resumen</strong></div>
+    </header>
+    <div id="sum-body" class="sumbody"></div>
+  </section>
+
+  <!-- 4. my bills (this device) -->
+  <section id="s-mine" class="screen" hidden>
+    <header class="top">
+      <button id="m-close" class="iconbtn" aria-label="Cerrar" title="Cerrar"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+      <div class="ttl"><strong>Mis cuentas</strong></div>
+      <button id="m-name" class="btn ghost small" aria-label="Cambiar mi nombre"></button>
+      <button id="m-new" class="btn primary small">Nueva foto</button>
+    </header>
+    <ul id="mine-list" class="lines"></ul>
+    <p id="mine-empty" class="empty" hidden>Aún no tienes cuentas en este móvil.</p>
+  </section>
+</main>
+
+<!-- photo viewer -->
+<div id="photo" class="photo" hidden>
+  <div class="photo-top">
+    <strong id="photo-title">Foto del ticket</strong>
+    <span class="spacer"></span>
+    <button id="photo-reset" class="btn glass small" hidden>1×</button>
+    <button id="photo-close" class="btn glass small">Cerrar</button>
+  </div>
+  <div id="photo-scroll" class="photo-scroll"><p class="photo-hint" id="photo-hint">Pellizca para ampliar · doble toque para acercar</p>
+    <div id="photo-wrap" class="photo-wrap"><img id="photo-img" alt="Foto del ticket"><div id="photo-band" class="band" hidden></div></div>
+  </div>
+</div>
+
+<dialog id="dlg">
+  <form method="dialog" id="dlg-form">
+    <h3>Editar línea</h3>
+    <label>Descripción<input id="e-name" required maxlength="60"></label>
+    <div class="row2">
+      <label>Cantidad<input id="e-qty" inputmode="decimal" required></label>
+      <label>Importe (€)<input id="e-amount" inputmode="decimal" required></label>
+    </div>
+    <div class="dlg-actions">
+      <button type="button" id="e-del" class="btn danger">Borrar</button>
+      <span class="spacer"></span>
+      <button value="cancel" class="btn ghost" formnovalidate>Cancelar</button>
+      <button value="ok" class="btn primary">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="fdlg" class="fin">
+  <form method="dialog">
+    <div class="fin-check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12l5 5 10-10"/></svg></div>
+    <p class="fin-label" id="fin-label">Tu parte</p>
+    <p class="fin-amount" id="fin-amount">0,00 €</p>
+    <p class="fin-sub" id="fin-sub"></p>
+    <p class="fin-warn" id="fin-warn" hidden></p>
+    <ul class="fin-list" id="fin-list"></ul>
+    <button value="ok" class="btn primary big fin-ok">Entendido</button>
+    <button value="back" class="btn ghost fin-back">Seguir marcando</button>
+  </form>
+</dialog>
+
+<dialog id="tdlg">
+  <form method="dialog" id="tdlg-form">
+    <h3>Datos de la cuenta</h3>
+    <label>Nombre<input id="t-name" maxlength="40" autocomplete="off" placeholder="Ej.: Cena con Marga"></label>
+    <label>Fecha del ticket<input id="t-date" type="date" min="2000-01-01" required></label>
+    <div class="dlg-actions">
+      <span class="spacer"></span>
+      <button value="cancel" class="btn ghost" formnovalidate>Cancelar</button>
+      <button value="ok" class="btn primary">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="ndlg" class="fin">
+  <form method="dialog">
+    <div class="fin-check amber" aria-hidden="true"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="32" fill="#f5a623"/><g id="warn-glyph"><path d="M27.6 18.2a4.4 4.4 0 0 1 8.8 0l-1.6 18.6a2.8 2.8 0 0 1-5.6 0z"/><circle cx="32" cy="46" r="4.2"/></g></svg></div>
+    <h3 id="n-title"></h3>
+    <p class="fin-note" id="n-text"></p>
+    <button value="ok" class="btn primary big fin-ok">Entendido</button>
+  </form>
+</dialog>
+
+<dialog id="pdlg">
+  <form method="dialog">
+    <h3>¿Cómo te llamas?</h3>
+    <p class="hint">Se verá junto a lo que marques, para que los demás sepan qué es tuyo. Puedes cambiarlo cuando quieras.</p>
+    <label>Tu nombre<input id="p-name" required maxlength="24" autocomplete="given-name" placeholder="Ej.: Lucía"></label>
+    <div class="dlg-actions">
+      <span class="spacer"></span>
+      <button id="p-cancel" value="cancel" class="btn ghost" formnovalidate hidden>Cancelar</button>
+      <button value="ok" class="btn primary">Guardar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="cdlg">
+  <form method="dialog">
+    <h3 id="c-title"></h3>
+    <p class="hint" id="c-text"></p>
+    <div class="dlg-actions">
+      <span class="spacer"></span>
+      <button value="cancel" class="btn ghost">Cancelar</button>
+      <button id="c-ok" value="ok" class="btn danger solid">Aceptar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="ddlg">
+  <form method="dialog">
+    <h3>¿Eliminar de tus cuentas?</h3>
+    <p class="hint" id="ddlg-text"></p>
+    <div class="dlg-actions">
+      <span class="spacer"></span>
+      <button value="cancel" class="btn ghost">Cancelar</button>
+      <button value="del" class="btn danger solid">Eliminar</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="sdlg">
+  <h3>Compartir cuenta</h3>
+  <p class="hint">Quien abra este enlace ve la misma cuenta, con tus correcciones, y marca lo suyo en su móvil.</p>
+  <label>Enlace<input id="s-link" readonly></label>
+  <div class="dlg-actions">
+    <button id="s-copy" class="btn">Copiar</button>
+    <button id="s-share" class="btn primary">Compartir…</button>
+  </div>
+  <div id="s-owner" class="own" hidden>
+    <div class="own-row">
+      <div class="own-text"><strong>Permitir correcciones de precios</strong><span id="s-allow-hint"></span></div>
+      <button id="s-allow" class="switch" role="switch" aria-checked="true" aria-label="Permitir correcciones de precios"><span class="track"></span></button>
+    </div>
+  </div>
+  <button id="s-claim" class="btn gap" hidden>Soy el dueño de esta cuenta</button>
+  <div class="dlg-actions end"><button id="s-close" class="btn ghost">Cerrar</button></div>
+</dialog>
+
+<div id="install" class="install" hidden>
+  <div class="install-ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12M8 11l4 4 4-4M5 21h14"/></svg></div>
+  <div class="install-text">
+    <strong>Instala Cuenta</strong>
+    <span id="install-hint">Ábrela desde tu pantalla de inicio, a pantalla completa.</span>
+  </div>
+  <button id="install-go" class="btn primary small" hidden>Instalar</button>
+  <button id="install-x" class="iconbtn small" aria-label="Ahora no"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+<script type="module" src="/static/app.js?v={{v}}"></script>
+</body>
+</html>
