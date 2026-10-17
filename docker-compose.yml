@@ -1,0 +1,33 @@
+services:
+  cuenta-app:
+    build: .
+    container_name: cuenta
+    restart: unless-stopped
+    ports:
+      - "8102:8000"
+    volumes:
+      - cuenta_data:/data
+    environment:
+      CUENTA_MAX_SCANS_DAY: "200"     # tickets per day for the whole site (0 = pause scanning)
+      # Optional second reader: a separate private container that holds the API key (not in this repo). Empty = local OCR only.
+      CUENTA_AI_URL: "${CUENTA_AI_URL:-}"
+      CUENTA_AI_SECRET: "${CUENTA_AI_SECRET:-}"
+    # hardening + resource limits (the OCR is CPU/RAM hungry and the site is public)
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    networks: [default, cuenta-ai-net]
+    # the app never needs the internet (OCR is local): no DNS = nothing external can be contacted, telemetry included
+    dns: ["127.0.0.1"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 200
+    mem_limit: 1g
+    cpus: 2
+
+networks:
+  cuenta-ai-net:
+    external: true      # created by the private reader service's compose file
+
+volumes:
+  cuenta_data:
